@@ -1,17 +1,17 @@
 /*
- * Copyright (C) 2015 Sylvain Afchain
+ * Copyright 2015 Sylvain Afchain <safchain@gmail.com>
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the
- * GNU General Public License as published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License along with this program; if
- * not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #include <stdio.h>
@@ -26,6 +26,10 @@
 #include <stdarg.h>
 
 #include "cmocker.h"
+
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 struct hmap {
   struct hnode *nodes;
@@ -70,26 +74,28 @@ struct called {
 
 static struct hmap *returns = NULL;
 static struct hmap *calls = NULL;
+
+#ifdef HAVE_LIBPTHREAD
 static pthread_mutex_t call_mutex;
+#endif
 
 static struct list *list_alloc()
 {
   struct list *list;
 
-  if ((list = calloc(1, sizeof(struct list))) == NULL) {
-    return NULL;
-  }
+  list = calloc(1, sizeof(struct list));
+  assert(list != NULL);
 
   return list;
 }
 
-static int list_push(struct list *list, void *value, unsigned int size)
+static void list_push(struct list *list, void *value, unsigned int size)
 {
   struct list_node *node_ptr;
 
-  if ((node_ptr = malloc(sizeof(struct list_node) + size)) == NULL) {
-    return -1;
-  }
+  node_ptr = malloc(sizeof(struct list_node) + size);
+  assert(node_ptr != NULL);
+
   node_ptr->next = NULL;
 
   if (list->nodes == NULL) {
@@ -102,8 +108,6 @@ static int list_push(struct list *list, void *value, unsigned int size)
   list->last = node_ptr;
 
   memcpy((char *) node_ptr + sizeof(struct list_node), value, size);
-
-  return 0;
 }
 
 static void *list_get(struct list *list, unsigned int index)
@@ -149,20 +153,18 @@ static struct hmap *hmap_alloc(unsigned int size)
 {
   struct hmap *hmap;
 
-  if ((hmap = malloc(sizeof(struct hmap))) == NULL) {
-    return NULL;
-  }
+  hmap = malloc(sizeof(struct hmap));
+  assert(hmap != NULL);
 
-  if ((hmap->nodes = calloc(size, sizeof(struct hnode))) == NULL) {
-    free(hmap);
-    return NULL;
-  }
+  hmap->nodes = calloc(size, sizeof(struct hnode));
+  assert(hmap->nodes != NULL);
+
   hmap->hsize = size;
 
   return hmap;
 }
 
-static inline unsigned int hmap_get_key(struct hmap *hmap, const char *key)
+static unsigned int hmap_get_key(struct hmap *hmap, const char *key)
 {
   unsigned int hash = 0;
   const char *c = key;
@@ -191,13 +193,12 @@ static struct hnode *hmap_put(struct hmap *hmap, const char *key,
   hnode_ptr = (struct hnode *) (hnode_ptr + index);
   do {
     if (hnode_ptr->key == NULL) {
-      if ((hnode_ptr->key = strdup(key)) == NULL) {
-        return NULL;
-      }
+      hnode_ptr->key = strdup(key);
+      assert(hnode_ptr->key != NULL);
 
-      if ((hnode_ptr->value = malloc(size)) == NULL) {
-        goto error;
-      }
+      hnode_ptr->value = malloc(size);
+      assert(hnode_ptr != NULL);
+
       memcpy(hnode_ptr->value, value, size);
 
       break;
@@ -205,27 +206,22 @@ static struct hnode *hmap_put(struct hmap *hmap, const char *key,
 
     if (strcmp(key, hnode_ptr->key) == 0) {
       free(hnode_ptr->value);
-      if ((hnode_ptr->value = malloc(size)) == NULL) {
-        goto error;
-      }
+
+      hnode_ptr->value = malloc(size);
+      assert(hnode_ptr != NULL);
+
       memcpy(hnode_ptr->value, value, size);
 
       break;
     }
 
     if (hnode_ptr->next == NULL) {
-      if ((hnode_ptr->next = calloc(1, sizeof(struct hnode))) == NULL) {
-        goto error;
-      }
+      hnode_ptr->next = calloc(1, sizeof(struct hnode));
+      assert(hnode_ptr->next != NULL);
     }
 
     hnode_ptr = hnode_ptr->next;
   } while (hnode_ptr != NULL);
-
-  return hnode_ptr;
-
-error:
-  _free0((void *) &hnode_ptr->key);
 
   return hnode_ptr;
 }
@@ -363,7 +359,9 @@ void mock_init()
   calls = hmap_alloc(32);
   assert(calls != NULL);
 
+#ifdef HAVE_LIBPTHREAD
   pthread_mutex_init(&call_mutex, NULL);
+#endif
 }
 
 void mock_destroy()
@@ -376,7 +374,9 @@ void mock_destroy()
   hmap_free(calls);
   calls = NULL;
 
+#ifdef HAVE_LIBPTHREAD
   pthread_mutex_destroy(&call_mutex);
+#endif
 }
 
 void mock_will_return(const char *fnc, void *value, int type)
@@ -425,8 +425,10 @@ void mock_called_with(const char *fnc, void *ptr)
   struct called *called;
   int rc;
 
+#ifdef HAVE_LIBPTHREAD
   rc = pthread_mutex_lock(&call_mutex);
   assert(rc == 0);
+#endif
 
   called = (struct called *)hmap_get(calls, fnc);
   if (called == NULL) {
@@ -445,8 +447,10 @@ void mock_called_with(const char *fnc, void *ptr)
     list_push(called->list, &ptr, sizeof(void *));
   }
 
+#ifdef HAVE_LIBPTHREAD
   rc = pthread_mutex_unlock(&call_mutex);
   assert(rc == 0);
+#endif
 }
 
 void mock_called(const char *fnc)
@@ -459,8 +463,10 @@ void mock_reset_calls_for(const char *fnc)
   struct called *called;
   int rc;
 
+#ifdef HAVE_LIBPTHREAD
   rc = pthread_mutex_lock(&call_mutex);
   assert(rc == 0);
+#endif
 
   called = (struct called *)hmap_get(calls, fnc);
   if (called != NULL) {
@@ -468,8 +474,10 @@ void mock_reset_calls_for(const char *fnc)
   }
   hmap_del(calls, fnc);
 
+#ifdef HAVE_LIBPTHREAD
   rc = pthread_mutex_unlock(&call_mutex);
   assert(rc == 0);
+#endif
 }
 
 int mock_calls(const char *fnc)
@@ -477,16 +485,20 @@ int mock_calls(const char *fnc)
   struct called *called;
   int rc, c = 0;
 
+#ifdef HAVE_LIBPTHREAD
   rc = pthread_mutex_lock(&call_mutex);
   assert(rc == 0);
+#endif
 
   called = (struct called *)hmap_get(calls, fnc);
   if (called != NULL) {
     c = called->calls;
   }
 
+#ifdef HAVE_LIBPTHREAD
   rc = pthread_mutex_unlock(&call_mutex);
   assert(rc == 0);
+#endif
 
   return c;
 }
@@ -497,8 +509,10 @@ void *mock_call(const char *fnc, int at)
   void **ptr;
   int rc;
 
+#ifdef HAVE_LIBPTHREAD
   rc = pthread_mutex_lock(&call_mutex);
   assert(rc == 0);
+#endif
 
   called = (struct called *)hmap_get(calls, fnc);
   if (called == NULL) {
@@ -510,14 +524,18 @@ void *mock_call(const char *fnc, int at)
       goto not_found;
   }
 
+#ifdef HAVE_LIBPTHREAD
   rc = pthread_mutex_unlock(&call_mutex);
   assert(rc == 0);
+#endif
 
   return *ptr;
 
 not_found:
+#ifdef HAVE_LIBPTHREAD
   rc = pthread_mutex_unlock(&call_mutex);
   assert(rc == 0);
+#endif
 
   return NULL;
 }

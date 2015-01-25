@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cd /tmp
+
+sudo apt-get -y install check make gcc \
+    autoconf automake libtool flex bison

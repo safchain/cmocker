@@ -1,6 +1,8 @@
 language: c
 compiler:
   - gcc
+install:
+  - ./install-deps
 script:
   - ./configure
   - make distcheck

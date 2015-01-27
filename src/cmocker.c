@@ -422,7 +422,8 @@ void *mock_returns(const char *fnc, ...)
 
 void mock_called_with(const char *fnc, void *ptr)
 {
-  struct called *called;
+  struct called *called, c;
+  struct hnode *hnode;
   int rc;
 
 #ifdef HAVE_LIBPTHREAD
@@ -432,16 +433,18 @@ void mock_called_with(const char *fnc, void *ptr)
 
   called = (struct called *)hmap_get(calls, fnc);
   if (called == NULL) {
-    called = (struct called *)calloc(1, sizeof(struct called));
-    assert(called != NULL);
+    c.list = list_alloc();
+    assert(c.list != NULL);
 
-    called->list = list_alloc();
-    assert(called->list != NULL);
+    c.calls = 1;
 
-    called->calls = 1;
-    hmap_put(calls, fnc, called, sizeof(struct called));
+    hnode = hmap_put(calls, fnc, &c, sizeof(struct called));
+    assert(hnode != NULL);
+
+    called = (struct called *)hnode->value;
+  } else {
+    called->calls++;
   }
-  called->calls++;
 
   if (ptr != NULL) {
     list_push(called->list, &ptr, sizeof(void *));

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([cmocker], [0.9], [safchain@gmail.com])
+AC_INIT([cmocker], [0.9.1], [safchain@gmail.com])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
 LT_PREREQ([2.2])

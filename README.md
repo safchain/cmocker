@@ -3,7 +3,7 @@
 cmocker
 =======
 
-cmocker is a little C library to help writing unit test especially to implement mock object/function. It can be use with almost all the unit test frameworks. It can be used as a library or just by using the unique C file. There is no external dependencies.
+cmocker is a little C library to help writing unit test especially to implement mock object/function. It can be use with almost all the unit test frameworks. It can be used as a library or just by using the unique C file. There is no external dependencies and it is thread safe.
 
 Installation
 ----------------
@@ -145,7 +145,7 @@ Now let's assume we want to specify what will be the value returned by the mocke
         ...
         if (do_something()) {
           do_somethingelse();
-            }
+        }
     }
 
 So let's see how to manage the returned values.
@@ -198,7 +198,7 @@ We can use/get the parameters passed from the mocked to the generator. Let's mod
         ...
         if (do_something(2) == 46) {
           do_somethingelse();
-            }
+        }
     }
 
 So the test will be :

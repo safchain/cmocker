@@ -564,7 +564,7 @@ int mock_wait_for_call_num_higher_than(const char *fnc, int limit, int timeout)
   while(start + timeout > now) {
     called = mock_calls(fnc);
     if (called > limit) {
-      return 1;
+      return called;
     }
     usleep(100);
     now = time(NULL);

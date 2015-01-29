@@ -615,6 +615,8 @@ ac_unique_file="include/cmocker.h"
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
+GCOV_LIBS
+GCOV_CFLAGS
 LIBOBJS
 CHECK_LIBS
 CHECK_CFLAGS
@@ -740,6 +742,7 @@ enable_dependency_tracking
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
+enable_gcov
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1382,6 +1385,7 @@ Optional Features:
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
   --disable-libtool-lock  avoid locking (might break parallel builds)
+  --enable-gcov           turn on test coverage [default=no]
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -12475,6 +12479,26 @@ _ACEOF
 fi
 done
 
+
+# Check whether --enable-gcov was given.
+if test "${enable_gcov+set}" = set; then :
+  enableval=$enable_gcov; case "${enableval}" in
+  yes) enable_gcov=true ;;
+  no)  enable_gcov=false ;;
+  *)   as_fn_error $? "bad value ${enableval} for --enable-gcov" "$LINENO" 5 ;;
+esac
+else
+  enable_gcov=false
+fi
+
+
+if test x$enable_gcov = xtrue ; then
+  GCOV_CFLAGS="-fprofile-arcs -ftest-coverage"
+
+
+        GCOV_LIBS=-lgcov
+
+fi
 
 ac_config_files="$ac_config_files Makefile src/Makefile tests/Makefile"
 

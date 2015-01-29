@@ -45,8 +45,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am_check_cmocker_OBJECTS = check_cmocker-check_cmocker.$(OBJEXT) \
-	check_cmocker-cmocker.$(OBJEXT)
+am_check_cmocker_OBJECTS = check_cmocker-check_cmocker.$(OBJEXT)
 check_cmocker_OBJECTS = $(am_check_cmocker_OBJECTS)
 check_cmocker_DEPENDENCIES = $(top_builddir)/src/libcmocker.la
 check_cmocker_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -98,6 +97,8 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
+GCOV_CFLAGS = @GCOV_CFLAGS@
+GCOV_LIBS = @GCOV_LIBS@
 GREP = @GREP@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -190,9 +191,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-check_cmocker_SOURCES = check_cmocker.c \
-                        $(top_builddir)/src/cmocker.c
-
+check_cmocker_SOURCES = check_cmocker.c
 check_cmocker_CFLAGS = @CHECK_CFLAGS@ -I$(top_builddir)/include \
                         -I$(top_builddir)/../include
 
@@ -251,7 +250,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_cmocker-check_cmocker.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_cmocker-cmocker.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -287,20 +285,6 @@ check_cmocker-check_cmocker.obj: check_cmocker.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='check_cmocker.c' object='check_cmocker-check_cmocker.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_cmocker_CFLAGS) $(CFLAGS) -c -o check_cmocker-check_cmocker.obj `if test -f 'check_cmocker.c'; then $(CYGPATH_W) 'check_cmocker.c'; else $(CYGPATH_W) '$(srcdir)/check_cmocker.c'; fi`
-
-check_cmocker-cmocker.o: $(top_builddir)/src/cmocker.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_cmocker_CFLAGS) $(CFLAGS) -MT check_cmocker-cmocker.o -MD -MP -MF $(DEPDIR)/check_cmocker-cmocker.Tpo -c -o check_cmocker-cmocker.o `test -f '$(top_builddir)/src/cmocker.c' || echo '$(srcdir)/'`$(top_builddir)/src/cmocker.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/check_cmocker-cmocker.Tpo $(DEPDIR)/check_cmocker-cmocker.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_builddir)/src/cmocker.c' object='check_cmocker-cmocker.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_cmocker_CFLAGS) $(CFLAGS) -c -o check_cmocker-cmocker.o `test -f '$(top_builddir)/src/cmocker.c' || echo '$(srcdir)/'`$(top_builddir)/src/cmocker.c
-
-check_cmocker-cmocker.obj: $(top_builddir)/src/cmocker.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_cmocker_CFLAGS) $(CFLAGS) -MT check_cmocker-cmocker.obj -MD -MP -MF $(DEPDIR)/check_cmocker-cmocker.Tpo -c -o check_cmocker-cmocker.obj `if test -f '$(top_builddir)/src/cmocker.c'; then $(CYGPATH_W) '$(top_builddir)/src/cmocker.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/src/cmocker.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/check_cmocker-cmocker.Tpo $(DEPDIR)/check_cmocker-cmocker.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_builddir)/src/cmocker.c' object='check_cmocker-cmocker.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(check_cmocker_CFLAGS) $(CFLAGS) -c -o check_cmocker-cmocker.obj `if test -f '$(top_builddir)/src/cmocker.c'; then $(CYGPATH_W) '$(top_builddir)/src/cmocker.c'; else $(CYGPATH_W) '$(srcdir)/$(top_builddir)/src/cmocker.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

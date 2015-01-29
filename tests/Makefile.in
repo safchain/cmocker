@@ -196,6 +196,7 @@ check_cmocker_CFLAGS = @CHECK_CFLAGS@ -I$(top_builddir)/include \
                         -I$(top_builddir)/../include
 
 check_cmocker_LDADD = @CHECK_LIBS@ $(top_builddir)/src/libcmocker.la -lpthread
+CLEANFILES = *~ *.gcno *.gcda *.gcov
 all: all-am
 
 .SUFFIXES:
@@ -495,6 +496,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)

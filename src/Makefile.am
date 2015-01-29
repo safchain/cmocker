@@ -1,4 +1,4 @@
-AM_CFLAGS = @GCOV_CFLAGS@ -I$(top_srcdir)/include
+AM_CFLAGS = @GCOV_CFLAGS@ -I$(top_srcdir)/include -Wall
 
 lib_LTLIBRARIES = libcmocker.la
 libcmocker_la_SOURCES = cmocker.c

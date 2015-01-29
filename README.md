@@ -1,3 +1,4 @@
+[![Coverage Status](https://coveralls.io/repos/safchain/cmocker/badge.svg?branch=master)](https://coveralls.io/r/safchain/cmocker?branch=master)
 [![Build Status](https://travis-ci.org/safchain/cmocker.png)](https://travis-ci.org/safchain/cmocker)
 
 cmocker

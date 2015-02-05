@@ -411,7 +411,7 @@ void *mock_returns(const char *fnc, ...)
     hmap_del(returns, fnc);
   } else if (r->type == MOCK_RETURNED_FNC) {
     va_start(pa, fnc);
-    value = ((void*(*)(va_list *pa))r->value)(&pa);
+    value = ((void*(*)(va_list pa))r->value)(pa);
     va_end(pa);
 
     return value;

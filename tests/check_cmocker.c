@@ -92,7 +92,7 @@ START_TEST(test_returns)
 }
 END_TEST
 
-static void *returns_fnc(va_list *pa)
+static void *returns_fnc(va_list pa)
 {
   static int i = 0;
 
@@ -122,11 +122,11 @@ START_TEST(test_returns_fnc)
 }
 END_TEST
 
-static void *returns_fnc_pa(va_list *pa)
+static void *returns_fnc_pa(va_list pa)
 {
   static int i = 44;
 
-  i += va_arg(*pa, int);
+  i += va_arg(pa, int);
 
   return &i;
 }

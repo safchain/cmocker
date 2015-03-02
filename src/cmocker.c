@@ -551,7 +551,6 @@ void mock_reset_calls()
   hmap_init_iterator(calls, &iterator);
   while((hnode = hmap_iterate(&iterator)) != NULL) {
     list_free(((struct called *)hnode->value)->list);
-    hmap_free_node(hnode);
   }
 }
 

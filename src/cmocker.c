@@ -364,12 +364,23 @@ void mock_init()
 #endif
 }
 
+void mock_free_calls()
+{
+  struct hmap_iterator iterator;
+  struct hnode *hnode;
+
+  hmap_init_iterator(calls, &iterator);
+  while((hnode = hmap_iterate(&iterator)) != NULL) {
+    list_free(((struct called *)hnode->value)->list);
+  }
+}
+
 void mock_destroy()
 {
   hmap_free(returns);
   returns = NULL;
 
-  mock_reset_calls();
+  mock_free_calls();
 
   hmap_free(calls);
   calls = NULL;
@@ -550,7 +561,8 @@ void mock_reset_calls()
 
   hmap_init_iterator(calls, &iterator);
   while((hnode = hmap_iterate(&iterator)) != NULL) {
-    list_free(((struct called *)hnode->value)->list);
+    list_reset(((struct called *)hnode->value)->list);
+    ((struct called *)hnode->value)->calls = 0;
   }
 }
 
